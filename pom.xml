@@ -16,7 +16,16 @@
     <skipITs>true</skipITs>
     <surefire-plugin.version>3.0.0-M7</surefire-plugin.version>
   </properties>
+  <repositories>
+    <repository>
+      <id>central</id>
+      <url>https://repo.maven.apache.org/maven2</url>
+    </repository>
+  </repositories>
+
+
   <dependencyManagement>
+
     <dependencies>
       <dependency>
         <groupId>${quarkus.platform.group-id}</groupId>
@@ -71,6 +80,7 @@
       <scope>test</scope>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
@@ -91,6 +101,7 @@
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${compiler-plugin.version}</version>
+
         <configuration>
           <compilerArgs>
             <arg>-parameters</arg>
@@ -140,6 +151,8 @@
         <skipITs>false</skipITs>
         <quarkus.package.type>native</quarkus.package.type>
       </properties>
+
+
     </profile>
   </profiles>
 </project>
