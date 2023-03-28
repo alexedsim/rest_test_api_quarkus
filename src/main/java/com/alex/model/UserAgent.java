@@ -3,7 +3,6 @@ package com.alex.model;
 
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Page;
-import org.bson.codecs.pojo.annotations.BsonId;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
 
 import java.sql.Timestamp;
@@ -12,7 +11,7 @@ import java.util.List;
 @MongoEntity(collection = "useragent")
 public class UserAgent extends PanacheMongoEntity {
 
-    @BsonId
+
     public String userAgentHash;
 
     public String userAgentString;
