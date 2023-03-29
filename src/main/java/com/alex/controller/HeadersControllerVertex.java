@@ -13,8 +13,8 @@ import javax.ws.rs.core.Response.Status;
 
 import io.smallrye.mutiny.Uni;
 
-@Path("/headers/mirror")
-public class HeadersController {
+@Path("/headers/mirror/vertex")
+public class HeadersControllerVertex {
 
     @Inject
     io.vertx.mutiny.core.eventbus.EventBus eventBus;
