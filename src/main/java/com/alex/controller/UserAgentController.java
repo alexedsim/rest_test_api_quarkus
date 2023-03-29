@@ -1,5 +1,6 @@
 package com.alex.controller;
 
+import com.alex.exception.UserAgentCreationException;
 import com.alex.model.UserAgent;
 import com.alex.service.UserAgentService;
 
@@ -21,7 +22,7 @@ public class UserAgentController {
            userAgentService.createUserAgent(userAgent);
            return Response.status(Response.Status.CREATED).build();
        }catch (Exception e){
-           throw new RuntimeException("Failed to create user agent");
+           throw new UserAgentCreationException("");
        }
     }
     @GET
