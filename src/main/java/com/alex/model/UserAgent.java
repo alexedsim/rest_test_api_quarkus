@@ -1,10 +1,11 @@
 package com.alex.model;
 
 
+import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Page;
-import io.quarkus.mongodb.panache.PanacheMongoEntity;
 import io.quarkus.panache.common.Sort;
+import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Date;
 import java.util.List;
@@ -14,9 +15,9 @@ import java.util.List;
 
 
 @MongoEntity(collection = "useragent")
-public class UserAgent extends PanacheMongoEntity{
+public class UserAgent extends PanacheMongoEntityBase {
 
-
+    @BsonId
     public String userAgentHash;
 
     public String userAgentString;
@@ -60,22 +61,7 @@ public class UserAgent extends PanacheMongoEntity{
     public static UserAgent findByUserAgentHash(String userAgentHash){
         return find("userAgentHash", userAgentHash).firstResult();
     }
-    /*
-    public static List<UserAgent> findTop10ByOrderByTimestampDesc(){
-        return find("ORDER BY timestamp DESC").page(Page.ofSize(10)).list();
-    }
 
-    public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
-        return UserAgent.<UserAgent>find("ORDER BY timestamp DESC").page(Page.ofSize(10)).list();
-    }
-
-    public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
-        String query = "ORDER BY timestamp DESC";
-        List<UserAgent> results = find(query).page(Page.ofSize(10)).list();
-
-        return results;
-    }
-    */
     public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
         String query = "{ }";
         String orderBy = "timestamp";
