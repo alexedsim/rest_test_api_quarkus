@@ -16,7 +16,7 @@ public class UserAgentController {
     UserAgentService userAgentService;
 
     @POST
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
     public Response createUserAgent(@HeaderParam("User-Agent") String userAgent){
        try{
            userAgentService.createUserAgent(userAgent);
@@ -31,6 +31,20 @@ public class UserAgentController {
         List<UserAgent> lastTenUserAgents = userAgentService.getLastTenUserAgents();
         return Response.ok(lastTenUserAgents).build();
     }
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response getAllUserAgents(){
+        List<UserAgent> lastTenUserAgents = userAgentService.getAllUserAgents();
+        return Response.ok(lastTenUserAgents).build();
+    }
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+   public Response deleteAllUserAgents(){
+    userAgentService.removeAllUsers();
+    return Response.ok().build();
+ }
 
 
 }

@@ -1,5 +1,5 @@
 package com.alex.controller;
-
+/*
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -30,3 +30,4 @@ public class HeadersControllerVertex {
                 .onItem().transform(msg -> Response.status(Status.OK).entity(msg.body()).build());
     }
 }
+*/

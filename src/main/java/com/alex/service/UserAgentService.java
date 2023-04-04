@@ -3,31 +3,29 @@ package com.alex.service;
 import com.alex.model.UserAgent;
 
 import javax.enterprise.context.ApplicationScoped;
-import javax.transaction.Transactional;
-
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.sql.Timestamp;
-import java.time.LocalDateTime;
+import java.time.Instant;
 import java.util.Base64;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 @ApplicationScoped
 public class UserAgentService {
 
-    @Transactional
+    //@Transactional
     public void createUserAgent(String userAgentString) {
         String userAgentHash = hashUserAgent(userAgentString);
         Optional<UserAgent> existingUserAgent = UserAgent.find("userAgentHash", userAgentHash).firstResultOptional();
         if (existingUserAgent.isPresent()) {
             UserAgent userAgentToUpdate = existingUserAgent.get();
-            userAgentToUpdate.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+            userAgentToUpdate.setTimestamp(Date.from(Instant.now()));
             userAgentToUpdate.persist();
         } else {
             UserAgent newUserAgent = new UserAgent(userAgentHash, userAgentString);
-            newUserAgent.setTimestamp(Timestamp.valueOf(LocalDateTime.now()));
+            newUserAgent.setTimestamp(Date.from(Instant.now()));
             newUserAgent.persist();
         }
     }
@@ -46,4 +44,12 @@ public class UserAgentService {
             throw new RuntimeException("Unable to create user agent hash: " + e.getMessage(), e);
         }
     }
+
+    public List<UserAgent> getAllUserAgents() {
+        return UserAgent.returnAllUserAgents();
+    }
+    public void removeAllUsers(){
+        UserAgent.deleteAllUserAgents();
+    }
+
 }

@@ -4,12 +4,17 @@ package com.alex.model;
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.panache.common.Page;
 import io.quarkus.mongodb.panache.PanacheMongoEntity;
+import io.quarkus.panache.common.Sort;
 
-import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
+
+
+
+
 @MongoEntity(collection = "useragent")
-public class UserAgent extends PanacheMongoEntity {
+public class UserAgent extends PanacheMongoEntity{
 
 
     public String userAgentHash;
@@ -17,8 +22,7 @@ public class UserAgent extends PanacheMongoEntity {
     public String userAgentString;
 
 
-    public Timestamp timestamp;
-
+    public Date timestamp;
 
 
     public UserAgent() {
@@ -37,11 +41,11 @@ public class UserAgent extends PanacheMongoEntity {
         this.userAgentString = userAgentString;
     }
 
-    public Timestamp getTimestamp() {
+    public Date getTimestamp() {
         return timestamp;
     }
 
-    public void setTimestamp(Timestamp timestamp) {
+    public void setTimestamp(Date timestamp) {
         this.timestamp = timestamp;
     }
 
@@ -56,10 +60,35 @@ public class UserAgent extends PanacheMongoEntity {
     public static UserAgent findByUserAgentHash(String userAgentHash){
         return find("userAgentHash", userAgentHash).firstResult();
     }
-
+    /*
     public static List<UserAgent> findTop10ByOrderByTimestampDesc(){
         return find("ORDER BY timestamp DESC").page(Page.ofSize(10)).list();
     }
 
+    public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
+        return UserAgent.<UserAgent>find("ORDER BY timestamp DESC").page(Page.ofSize(10)).list();
+    }
+
+    public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
+        String query = "ORDER BY timestamp DESC";
+        List<UserAgent> results = find(query).page(Page.ofSize(10)).list();
+
+        return results;
+    }
+    */
+    public static List<UserAgent> findTop10ByOrderByTimestampDesc() {
+        String query = "{ }";
+        String orderBy = "timestamp";
+        List<UserAgent> results = find(query, Sort.descending(orderBy)).page(Page.ofSize(10)).list();
+
+        return results;
+    }
+
+    public static List<UserAgent> returnAllUserAgents() {
+        return listAll();
+    }
+    public static void deleteAllUserAgents(){
+        deleteAll();
+    }
 
 }
