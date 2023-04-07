@@ -1,9 +1,11 @@
 package com.alex.model;
 
-import io.quarkus.mongodb.panache.PanacheMongoEntityBase;
+
 import io.quarkus.mongodb.panache.common.MongoEntity;
+import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
+
 import io.smallrye.mutiny.Uni;
 import org.bson.codecs.pojo.annotations.BsonId;
 
@@ -11,13 +13,13 @@ import java.util.Date;
 import java.util.List;
 
 @MongoEntity(collection = "useragentmutiny")
-public class UserAgentMutiny extends PanacheMongoEntityBase {
+public class UserAgentMutiny extends ReactivePanacheMongoEntityBase {
 
 
     @BsonId
-    public String userAgentHash;
+    public String userAgentMutinyHash;
 
-    public String userAgentString;
+    public String userAgentMutinyString;
 
 
     public Date timestamp;
@@ -26,17 +28,17 @@ public class UserAgentMutiny extends PanacheMongoEntityBase {
     public UserAgentMutiny() {
     }
 
-    public UserAgentMutiny(String userAgentHash, String userAgentString) {
-        this.userAgentHash = userAgentHash;
-        this.userAgentString = userAgentString;
+    public UserAgentMutiny(String userAgentMutinyHash, String userAgentMutinyString) {
+        this.userAgentMutinyHash = userAgentMutinyHash;
+        this.userAgentMutinyString = userAgentMutinyString;
     }
 
-    public String getUserAgentString() {
-        return userAgentString;
+    public String getUserAgentMutinyString() {
+        return userAgentMutinyString;
     }
 
-    public void setUserAgentString(String userAgentString) {
-        this.userAgentString = userAgentString;
+    public void setUserAgentMutinyString(String userAgentMutinyString) {
+        this.userAgentMutinyString = userAgentMutinyString;
     }
 
     public Date getTimestamp() {
@@ -47,31 +49,28 @@ public class UserAgentMutiny extends PanacheMongoEntityBase {
         this.timestamp = timestamp;
     }
 
-    public String getUserAgentHash() {
-        return userAgentHash;
+    public String getUserAgentMutinyHash() {
+        return userAgentMutinyHash;
     }
 
-    public void setUserAgentHash(String userAgentHash) {
-        this.userAgentHash = userAgentHash;
+    public void setUserAgentMutinyHash(String userAgentMutinyHash) {
+        this.userAgentMutinyHash = userAgentMutinyHash;
+    }
+    public static Uni<UserAgentMutiny> findByUserAgentMutinyHash(String userAgentMutinyHash) {
+        return find("userAgentHashMutiny", userAgentMutinyHash).firstResult();
     }
 
-    public static Uni<UserAgent> findByUserAgentHash(String userAgentHash){
-        return Uni.createFrom().item(find("userAgentHash", userAgentHash).firstResult());
-    }
-
-    public static Uni<List<UserAgent>> findTop10ByOrderByTimestampDesc() {
+    public static Uni<List<UserAgentMutiny>> findTop10ByOrderByTimestampDesc() {
         String query = "{ }";
         String orderBy = "timestamp";
-        List<UserAgent> results = find(query, Sort.descending(orderBy)).page(Page.ofSize(10)).list();
-
-        return Uni.createFrom().item(results);
+        return find(query, Sort.descending(orderBy)).page(Page.ofSize(10)).list();
     }
 
-    public static Uni<List<UserAgent>> returnAllUserAgents() {
+    public static Uni<List<UserAgentMutiny>> returnAllUserAgents() {
 
-        return Uni.createFrom().item(listAll());
+        return listAll();
     }
-    public static void deleteAllUserAgents(){
+    public static void deleteAllUserAgentsMutiny(){
         deleteAll();
     }
 }
