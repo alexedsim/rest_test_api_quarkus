@@ -54,8 +54,8 @@ public class UserAgentServiceMutiny {
     public Uni<List<UserAgentMutiny>> getAllUserAgents() {
         return UserAgentMutiny.returnAllUserAgents();
     }
-    public void removeAllUsers(){
-        UserAgentMutiny.deleteAllUserAgentsMutiny();
+    public Uni<Void> removeAllUsers(){
+       return UserAgentMutiny.deleteAllUserAgentsMutiny();
     }
 
 }

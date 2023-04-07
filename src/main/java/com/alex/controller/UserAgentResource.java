@@ -1,7 +1,7 @@
 package com.alex.controller;
 
 import com.alex.exception.UserAgentCreationException;
-import com.alex.service.UserAgentService;
+import com.alex.service.UserAgentServiceMutiny;
 import io.smallrye.mutiny.Uni;
 
 import javax.inject.Inject;
@@ -12,6 +12,7 @@ import javax.ws.rs.core.Response;
 
 @Path("/mutiny/useragents")
 public class UserAgentResource {
+    /*
     @Inject
     UserAgentService userAgentService;
 
@@ -62,4 +63,50 @@ public class UserAgentResource {
         });
 
     }
+
+     */
+    @Inject
+    UserAgentServiceMutiny userAgentServiceMutiny;
+
+    @GET
+    @Path("/all")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getAllUserAgents() {
+        return userAgentServiceMutiny.getAllUserAgents()
+                .onItem().transform(userAgents -> Response.ok(userAgents).build());
+    }
+
+    @GET
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getLastTenUserAgents() {
+        return userAgentServiceMutiny.getLastTenUserAgents()
+                .onItem().transform(lastTenUserAgents -> Response.ok(lastTenUserAgents).build());
+    }
+
+    @POST
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> createUserAgent(@HeaderParam("User-Agent") String userAgent) {
+        return userAgentServiceMutiny.createUserAgent(userAgent)
+                .onItem()
+                .transform(ignore -> Response.status(Response.Status.CREATED).build())
+                .onFailure()
+                .recoverWithItem(throwable -> {
+                    throw new UserAgentCreationException(""+throwable);
+                });
+
+    }
+
+    @DELETE
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> deleteAllUserAgents(){
+        return userAgentServiceMutiny.removeAllUsers()
+                .onItem()
+                .transform(ignore -> Response.status(Response.Status.OK).build())
+                .onFailure()
+                .recoverWithItem(throwable ->{
+                    throw new RuntimeException("Could not delte users!");
+                }
+                );
+    }
+
 }

@@ -70,7 +70,7 @@ public class UserAgentMutiny extends ReactivePanacheMongoEntityBase {
 
         return listAll();
     }
-    public static void deleteAllUserAgentsMutiny(){
-        deleteAll();
+    public static Uni<Void> deleteAllUserAgentsMutiny(){
+        return deleteAll().map(ignore -> null);
     }
 }
