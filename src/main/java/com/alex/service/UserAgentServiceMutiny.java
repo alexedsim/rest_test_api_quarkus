@@ -12,26 +12,33 @@ import java.time.Instant;
 import java.util.Base64;
 import java.util.Date;
 import java.util.List;
-
+import java.util.Optional;
 
 
 @ApplicationScoped
 public class UserAgentServiceMutiny {
 
 
-    public Uni<Void> createUserAgent(String userAgentString){
+    public Uni<Void> createOrUpdateUserAgent(String userAgentString){
         String userAgentHash = hashUserAgent(userAgentString);
         return UserAgentMutiny.findByUserAgentMutinyHash(userAgentHash)
-                .onItem().transformToUni( (optEntity) ->{
-                    if(optEntity != null){
-                        optEntity.setTimestamp(Date.from(Instant.now()));
-                        return optEntity.persist().map(ignore -> null);
-                    }else{
-                        UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash,userAgentString);
-                        newUserAgent.setTimestamp(Date.from(Instant.now()));
-                        return newUserAgent.persist().map(ignore -> null);
-                    }
-                });
+                .onItem().transformToUni( optEntity -> getVoidUni(userAgentString, userAgentHash, optEntity));
+    }
+
+    private static Uni<Void> getVoidUni(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
+        if(optEntity.isPresent()){
+            optEntity.get().setTimestamp(Date.from(Instant.now()));
+            return UserAgentMutiny.update(optEntity.get()).map(ignore -> null);
+        }else{
+            UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash, userAgentString);
+            newUserAgent.setTimestamp(Date.from(Instant.now()));
+            return newUserAgent.persist().map(ignore -> null);
+        }
+    }
+
+
+    public Uni<UserAgentMutiny> findWithHash(String hash){
+        return UserAgentMutiny.findByUserAgentMutinyHashNoOptional(hash);
     }
 
 

@@ -76,6 +76,14 @@ public class UserAgentResource {
                 .onItem().transform(userAgents -> Response.ok(userAgents).build());
     }
 
+    @POST
+    @Path("/findwithhash")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Uni<Response> getUserWithhash(@HeaderParam("User-Agent-Hash") String userAgentHash) {
+        return userAgentServiceMutiny.findWithHash(userAgentHash)
+                .onItem().transform(userAgents -> Response.ok(userAgents).build());
+    }
+
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> getLastTenUserAgents() {
@@ -85,10 +93,10 @@ public class UserAgentResource {
 
     @POST
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> createUserAgent(@HeaderParam("User-Agent") String userAgent) {
-        return userAgentServiceMutiny.createUserAgent(userAgent)
+    public Uni<Response> createOrUpdateUserAgent(@HeaderParam("User-Agent") String userAgent) {
+        return userAgentServiceMutiny.createOrUpdateUserAgent(userAgent)
                 .onItem()
-                .transform(ignore -> Response.status(Response.Status.CREATED).build())
+                .transform(userAgentItem -> Response.status(Response.Status.CREATED).build())
                 .onFailure()
                 .recoverWithItem(throwable -> {
                     throw new UserAgentCreationException(""+throwable);

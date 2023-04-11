@@ -1,16 +1,19 @@
 package com.alex.model;
 
 
+
 import io.quarkus.mongodb.panache.common.MongoEntity;
 import io.quarkus.mongodb.panache.reactive.ReactivePanacheMongoEntityBase;
 import io.quarkus.panache.common.Page;
 import io.quarkus.panache.common.Sort;
 
 import io.smallrye.mutiny.Uni;
+
 import org.bson.codecs.pojo.annotations.BsonId;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Optional;
 
 @MongoEntity(collection = "useragentmutiny")
 public class UserAgentMutiny extends ReactivePanacheMongoEntityBase {
@@ -56,8 +59,15 @@ public class UserAgentMutiny extends ReactivePanacheMongoEntityBase {
     public void setUserAgentMutinyHash(String userAgentMutinyHash) {
         this.userAgentMutinyHash = userAgentMutinyHash;
     }
-    public static Uni<UserAgentMutiny> findByUserAgentMutinyHash(String userAgentMutinyHash) {
-        return find("userAgentHashMutiny", userAgentMutinyHash).firstResult();
+    public static Uni<Optional<UserAgentMutiny>> findByUserAgentMutinyHash(String userAgentMutinyHash) {
+        return find("_id", userAgentMutinyHash).firstResult()
+                .onItem().transform(userAgentMutiny ->Optional.ofNullable((UserAgentMutiny) userAgentMutiny));
+
+
+    }
+
+    public static Uni<UserAgentMutiny> findByUserAgentMutinyHashNoOptional(String userAgentMutinyHash) {
+        return find("_id", userAgentMutinyHash).firstResult();
     }
 
     public static Uni<List<UserAgentMutiny>> findTop10ByOrderByTimestampDesc() {
@@ -73,4 +83,6 @@ public class UserAgentMutiny extends ReactivePanacheMongoEntityBase {
     public static Uni<Void> deleteAllUserAgentsMutiny(){
         return deleteAll().map(ignore -> null);
     }
+
+
 }
