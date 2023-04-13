@@ -2,6 +2,8 @@ package com.alex.service;
 
 import com.alex.model.UserAgentMutiny;
 import io.smallrye.mutiny.Uni;
+import io.smallrye.mutiny.tuples.Tuple2;
+import io.vertx.ext.auth.User;
 
 
 import javax.enterprise.context.ApplicationScoped;
@@ -19,20 +21,34 @@ import java.util.Optional;
 public class UserAgentServiceMutiny {
 
 
-    public Uni<Void> createOrUpdateUserAgent(String userAgentString){
+    public Uni<Tuple2<Boolean,UserAgentMutiny>> createOrUpdateUserAgent(String userAgentString){
         String userAgentHash = hashUserAgent(userAgentString);
         return UserAgentMutiny.findByUserAgentMutinyHash(userAgentHash)
-                .onItem().transformToUni( optEntity -> getVoidUni(userAgentString, userAgentHash, optEntity));
+                .onItem().transformToUni( optEntity -> doUpdateOrCreate(userAgentString, userAgentHash, optEntity));
     }
-
-    private static Uni<Void> getVoidUni(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
+    /*
+    private static Uni<Void> doUpdateOrCreate(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
+        Date date= Date.from(Instant.now());
         if(optEntity.isPresent()){
-            optEntity.get().setTimestamp(Date.from(Instant.now()));
+            optEntity.get().setTimestamp(date);
             return UserAgentMutiny.update(optEntity.get()).map(ignore -> null);
         }else{
             UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash, userAgentString);
-            newUserAgent.setTimestamp(Date.from(Instant.now()));
+            newUserAgent.setTimestamp(date);
             return newUserAgent.persist().map(ignore -> null);
+        }
+    }
+
+     */
+    private static Uni<Tuple2<Boolean,UserAgentMutiny>> doUpdateOrCreate(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
+        Date date= Date.from(Instant.now());
+        if(optEntity.isPresent()){
+            optEntity.get().setTimestamp(date);
+            return UserAgentMutiny.update(optEntity.get()).map(ignore -> Tuple2.of(false,optEntity.get()));
+        }else{
+            UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash, userAgentString);
+            newUserAgent.setTimestamp(date);
+            return newUserAgent.persist().map(ignore -> Tuple2.of(true,newUserAgent));
         }
     }
 
