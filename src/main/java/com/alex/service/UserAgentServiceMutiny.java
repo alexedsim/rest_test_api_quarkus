@@ -1,5 +1,7 @@
 package com.alex.service;
 
+import com.alex.exception.UserAgentCreationException;
+import com.alex.exception.UserAgentUpdateException;
 import com.alex.model.UserAgentMutiny;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
@@ -15,40 +17,37 @@ import java.util.Base64;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 
 
 @ApplicationScoped
 public class UserAgentServiceMutiny {
 
+    private static final Logger LOG = Logger.getLogger("UserAgentServiceMutiny");
 
     public Uni<Tuple2<Boolean,UserAgentMutiny>> createOrUpdateUserAgent(String userAgentString){
         String userAgentHash = hashUserAgent(userAgentString);
         return UserAgentMutiny.findByUserAgentMutinyHash(userAgentHash)
                 .onItem().transformToUni( optEntity -> doUpdateOrCreate(userAgentString, userAgentHash, optEntity));
     }
-    /*
-    private static Uni<Void> doUpdateOrCreate(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
-        Date date= Date.from(Instant.now());
-        if(optEntity.isPresent()){
-            optEntity.get().setTimestamp(date);
-            return UserAgentMutiny.update(optEntity.get()).map(ignore -> null);
-        }else{
-            UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash, userAgentString);
-            newUserAgent.setTimestamp(date);
-            return newUserAgent.persist().map(ignore -> null);
-        }
-    }
 
-     */
     private static Uni<Tuple2<Boolean,UserAgentMutiny>> doUpdateOrCreate(String userAgentString, String userAgentHash, Optional<UserAgentMutiny> optEntity) {
         Date date= Date.from(Instant.now());
         if(optEntity.isPresent()){
+            LOG.info("The object with user agent string: "+userAgentString+" and user agent hash: "+userAgentHash+" is already present.Updating.");
             optEntity.get().setTimestamp(date);
-            return UserAgentMutiny.update(optEntity.get()).map(ignore -> Tuple2.of(false,optEntity.get()));
+            return UserAgentMutiny.update(optEntity.get()).map(ignore -> Tuple2.of(false,optEntity.get()))
+                    .onFailure().recoverWithItem(throwable -> {
+                        throw new UserAgentUpdateException("Could not update user agent.");
+                    });
         }else{
+            LOG.info("The object with user agent string: "+userAgentString+" and user agent hash: "+userAgentHash+" is not present.Creating.");
             UserAgentMutiny newUserAgent = new UserAgentMutiny(userAgentHash, userAgentString);
             newUserAgent.setTimestamp(date);
-            return newUserAgent.persist().map(ignore -> Tuple2.of(true,newUserAgent));
+            return newUserAgent.persist().map(ignore -> Tuple2.of(true,newUserAgent))
+                    .onFailure().recoverWithItem(throwable -> {
+                        throw new UserAgentCreationException("Could not create user agent.");
+                    });
         }
     }
 

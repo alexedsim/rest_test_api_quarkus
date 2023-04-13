@@ -9,18 +9,23 @@ import javax.inject.Inject;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.util.logging.Logger;
 
 
 @Path("/mutiny/useragents")
 public class UserAgentResource {
 
+
     @Inject
     UserAgentServiceMutiny userAgentServiceMutiny;
+
+    private static final Logger LOG = Logger.getLogger("UserAgentResource");
 
     @GET
     @Path("/all")
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> getAllUserAgents() {
+        LOG.info("getAllUserAgents() called.");
         return userAgentServiceMutiny.getAllUserAgents()
                 .map(userAgents -> Response.ok(userAgents).build());
     }
@@ -28,7 +33,8 @@ public class UserAgentResource {
     @GET
     @Path("/findwithhash")
     @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> getUserWithhash(@HeaderParam("User-Agent-Hash") String userAgentHash) {
+    public Uni<Response> getUserWithHash(@HeaderParam("User-Agent-Hash") String userAgentHash) {
+        LOG.info("getUserWithHash() called.");
         return userAgentServiceMutiny.findWithHash(userAgentHash)
                 .map(userAgent -> Response.ok(userAgent).build());
     }
@@ -36,26 +42,16 @@ public class UserAgentResource {
     @GET
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> getLastTenUserAgents() {
+        LOG.info("getLastTenUserAgents() called.");
         return userAgentServiceMutiny.getLastTenUserAgents()
                 .map(lastTenUserAgents -> Response.ok(lastTenUserAgents).build());
     }
 
-    /*
-    @POST
-    @Produces(MediaType.APPLICATION_JSON)
-    public Uni<Response> createOrUpdateUserAgent(@HeaderParam("User-Agent") String userAgent) {
-        return userAgentServiceMutiny.createOrUpdateUserAgent(userAgent).
-                map(userAgentItem -> Response.ok(userAgentItem).build())
-                .onFailure()
-                .recoverWithItem(throwable -> {
-                    throw new UserAgentCreationException(""+throwable);
-                });
-        }
-    */
 
     @PUT
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> createOrUpdateUserAgent(@HeaderParam("User-Agent") String userAgent) {
+        LOG.info("createOrUpdateUserAgent() called with HeaderParam: "+userAgent);
         return userAgentServiceMutiny.createOrUpdateUserAgent(userAgent)
                 .map( result ->{
                     boolean isCreated = result.getItem1();
@@ -65,9 +61,6 @@ public class UserAgentResource {
                     }else{
                         return Response.status(Response.Status.OK).entity(userAgentItem).build();
                     }
-                }).onFailure()
-                .recoverWithItem(throwable -> {
-                    throw new UserAgentCreationException(""+throwable);
                 });
 
     }
@@ -75,6 +68,7 @@ public class UserAgentResource {
     @DELETE
     @Produces(MediaType.APPLICATION_JSON)
     public Uni<Response> deleteAllUserAgents(){
+        LOG.info("deleteAllUserAgents() called.");
         return userAgentServiceMutiny.removeAllUsers()
                 .map(deleteOperation -> Response.status(Response.Status.OK).build())
                 .onFailure()
