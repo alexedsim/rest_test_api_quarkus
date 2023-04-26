@@ -5,7 +5,7 @@ import com.alex.exception.UserAgentUpdateException;
 import com.alex.model.UserAgentMutiny;
 import io.smallrye.mutiny.Uni;
 import io.smallrye.mutiny.tuples.Tuple2;
-import io.vertx.ext.auth.User;
+
 
 
 import javax.enterprise.context.ApplicationScoped;

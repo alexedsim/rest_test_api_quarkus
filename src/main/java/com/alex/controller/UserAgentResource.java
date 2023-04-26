@@ -1,6 +1,6 @@
 package com.alex.controller;
 
-import com.alex.exception.UserAgentCreationException;
+
 import com.alex.model.UserAgentMutiny;
 import com.alex.service.UserAgentServiceMutiny;
 import io.smallrye.mutiny.Uni;
